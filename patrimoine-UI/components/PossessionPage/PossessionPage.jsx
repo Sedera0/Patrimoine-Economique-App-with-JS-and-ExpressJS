@@ -111,6 +111,7 @@ const PossessionPage = () => {
   return (
     <div className='container p-4'>
       <CreateButton showCreate={showCreate} setShowCreate={setShowCreate} />
+      {showCreate && <Create onCreate={handleCreate} />}
       <PossessionTable
           possessions={possessions}
           onEdit={setEditingId}
@@ -119,7 +120,6 @@ const PossessionPage = () => {
       {editingId && (
         <Update possessionId={editingId} onUpdate={handleUpdate} />
       )}
-      {showCreate && <Create onCreate={handleCreate} />}
     </div>
   );
 };

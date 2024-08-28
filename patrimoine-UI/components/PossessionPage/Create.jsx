@@ -36,7 +36,7 @@ const Create = ({ onCreate }) => {
 
   return (
     <Container className='form-container'>
-      <Row className="mt-4">
+      <Row className="m-1">
         <Col xs="auto">
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formId">

@@ -36,7 +36,7 @@ body {
 
 .form-container{
   display: flex;
-  border: 1px solid black;
+  border: 1px solid rgb(73, 175, 205);
   position: absolute;
   width: fit-content;
   top: 0;

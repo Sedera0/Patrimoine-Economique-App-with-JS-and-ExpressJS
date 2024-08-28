@@ -77,28 +77,6 @@
           "valeurConstante": -300000
         }
       ]
-    },
-    {
-      "id": "7",
-      "possesseur": "Rakoto",
-      "libelle": "Ordi",
-      "valeur": 5199998,
-      "dateDebut": "2024-08-09",
-      "dateFin": "2024-08-31",
-      "tauxAmortissement": "",
-      "jour": "",
-      "valeurConstante": ""
-    },
-    {
-      "id": "7",
-      "possesseur": "Sedera",
-      "libelle": "Dongle",
-      "valeur": 52222222220,
-      "dateDebut": "2024-08-09",
-      "dateFin": "",
-      "tauxAmortissement": "",
-      "jour": "",
-      "valeurConstante": ""
     }
   ]
 }

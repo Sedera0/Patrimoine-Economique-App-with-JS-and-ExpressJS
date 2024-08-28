@@ -82,17 +82,25 @@ app.post('/patrimoine/range', async (req, res) => {
       if (possessionDateDebut <= endDate && possessionDateFin >= startDate) {
         // Calculer la valeur en fonction du type et des jours spécifiés
         if (type === 'month') {
-          // Ici, on peut appliquer une logique pour calculer la valeur mensuelle
-          valeurPatrimoine += possession.valeur; // Exemple simple
+          const monthStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+          const monthEnd = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+          
+          if (possessionDateDebut <= monthEnd && possessionDateFin >= monthStart) {
+            valeurPatrimoine += possession.valeur;
+          }
+        } else {
+          // Add other types of calculations if needed
         }
       }
     }
 
     res.json({ valeur: valeurPatrimoine });
   } catch (error) {
+    console.error("Error in /patrimoine/range route:", error);
     res.status(500).json({ error: 'Failed to retrieve data' });
   }
 });
+
 
 // Create a new possession
 app.post('/possessions', async (req, res) => {

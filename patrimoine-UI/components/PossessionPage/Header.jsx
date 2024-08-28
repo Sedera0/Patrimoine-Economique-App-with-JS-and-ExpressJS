@@ -7,6 +7,7 @@ import { NavLink } from 'react-router-dom';
 
 const Header = () => {
   return (
+    <>
     <Navbar bg="dark" variant="dark" expand="lg">
       <Navbar.Brand as={NavLink} to="/">My Patri-Moine</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -17,6 +18,7 @@ const Header = () => {
         </Nav>
       </Navbar.Collapse>
     </Navbar>
+    </>
   );
 };
 

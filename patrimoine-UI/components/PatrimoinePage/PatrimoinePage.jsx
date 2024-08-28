@@ -7,6 +7,7 @@ import PatrimoineResult from './PatrimoineResult.jsx';
 import Patrimoine from '../../../models/Patrimoine.js';
 import Possession from '../../../models/possessions/Possession.js';
 import Flux from '../../../models/possessions/Flux.js';
+import PatrimoineChart from './PatrimoineChart.jsx'
 
 const PatrimoinePage = ({ possessions }) => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -47,8 +48,38 @@ const PatrimoinePage = ({ possessions }) => {
     }
   };
 
+  
+    const fetchPatrimoineData = async (dateDebut, dateFin, jour) => {
+      try {
+        const response = await fetch('http://localhost:5000/patrimoine/range', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'month', // Exemple de type, ajustez selon vos besoins
+            dateDebut: dateDebut.toISOString(),
+            dateFin: dateFin.toISOString(),
+            jour: parseInt(jour, 10),
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Network error: ${response.statusText}`);
+        }
+  
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error fetching patrimoine data:", error);
+        alert(`An error occurred while fetching data: ${(error).message}`);
+        return [];
+      }
+    };
+  
   return (
     <div className='container p-4'>
+      <PatrimoineChart onFetchData={fetchPatrimoineData} />
       <DateSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <CalculateButton calculatePatrimoineValue={calculatePatrimoineValue} />
       <PatrimoineResult patrimoineValue={patrimoineValue} />
