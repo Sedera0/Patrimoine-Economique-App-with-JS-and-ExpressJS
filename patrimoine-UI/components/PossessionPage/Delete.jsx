@@ -1,8 +1,6 @@
 import Button from 'react-bootstrap/Button';
 
 const Delete = ({ possessionId, onDelete }) => {
-  console.log('Delete component ID:', possessionId); // Vérifiez que l'ID est correct
-
   const handleClick = async () => {
     if (possessionId) {
       try {

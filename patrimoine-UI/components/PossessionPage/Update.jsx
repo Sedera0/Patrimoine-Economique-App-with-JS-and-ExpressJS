@@ -52,10 +52,10 @@ const Update = ({ possessionId, onUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Adapter les données avant l'envoi
-      const adaptedData = {
+      // Assurez-vous que le libelle est envoyé avec les données mises à jour
+      const updatedData = {
         possesseur: { nom: formData.possesseur },
-        libelle: formData.libelle,
+        libelle: formData.libelle,  // Vous devez envoyer le libelle pour identifier la possession
         valeur: formData.valeur,
         dateDebut: formData.dateDebut,
         dateFin: formData.dateFin || null,
@@ -63,27 +63,35 @@ const Update = ({ possessionId, onUpdate }) => {
         jour: formData.jour || null,
         valeurConstante: formData.valeurConstante || null,
       };
-
-      await onUpdate(adaptedData);
+  
+      const response = await fetch('http://localhost:5000/possessions', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          libelle: formData.libelle, // Libelle utilisé pour identifier la possession
+          updatedData
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Erreur réseau : ${response.statusText}`);
+      }
+      const data = await response.json();
+      onUpdate(data); // Passez les données mises à jour à la fonction onUpdate
+  
     } catch (error) {
       console.error("Erreur lors de la mise à jour :", error);
       alert(`Une erreur est survenue lors de la mise à jour : ${(error).message}`);
     }
   };
+  
 
   return (
     <div>
       <h3>Modifier l'élément</h3>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Possesseur:</label>
-          <input
-            type="text"
-            name="possesseur"
-            value={formData.possesseur}
-            onChange={handleChange}
-          />
-        </div>
         <div>
           <label>Libelle:</label>
           <input
@@ -94,56 +102,11 @@ const Update = ({ possessionId, onUpdate }) => {
           />
         </div>
         <div>
-          <label>Valeur:</label>
-          <input
-            type="number"
-            name="valeur"
-            value={formData.valeur}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Date de début:</label>
-          <input
-            type="date"
-            name="dateDebut"
-            value={formData.dateDebut}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
           <label>Date de fin:</label>
           <input
             type="date"
             name="dateFin"
             value={formData.dateFin}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Taux d'amortissement:</label>
-          <input
-            type="number"
-            name="tauxAmortissement"
-            value={formData.tauxAmortissement}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Jour:</label>
-          <input
-            type="number"
-            name="jour"
-            value={formData.jour}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Valeur constante:</label>
-          <input
-            type="number"
-            name="valeurConstante"
-            value={formData.valeurConstante}
             onChange={handleChange}
           />
         </div>

@@ -8,14 +8,10 @@ import Col from 'react-bootstrap/Col';
 const Create = ({ onCreate }) => {
   const [formData, setFormData] = useState({
     id: '',
-    possesseur: '',
     libelle: '',
     valeur: '',
     dateDebut: '',
-    dateFin: '',
     tauxAmortissement: '',
-    jour: '',
-    valeurConstante: ''
   });
 
   const handleChange = (e) => {
@@ -50,18 +46,6 @@ const Create = ({ onCreate }) => {
                 name="id"
                 required
                 value={formData.id}
-                onChange={handleChange}
-                className="small-input"
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formPossesseur">
-              <Form.Label>Possesseur</Form.Label>
-              <Form.Control
-                type="text"
-                name="possesseur"
-                required
-                value={formData.possesseur}
                 onChange={handleChange}
                 className="small-input"
               />
@@ -103,45 +87,12 @@ const Create = ({ onCreate }) => {
               />
             </Form.Group>
 
-            <Form.Group controlId="formDateFin">
-              <Form.Label>Date de Fin</Form.Label>
-              <Form.Control
-                type="date"
-                name="dateFin"
-                value={formData.dateFin}
-                onChange={handleChange}
-                className="small-input"
-              />
-            </Form.Group>
-
             <Form.Group controlId="formTauxAmortissement">
               <Form.Label>Taux d'Amortissement</Form.Label>
               <Form.Control
                 type="number"
                 name="tauxAmortissement"
                 value={formData.tauxAmortissement}
-                onChange={handleChange}
-                className="small-input"
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formJour">
-              <Form.Label>Jour</Form.Label>
-              <Form.Control
-                type="number"
-                name="jour"
-                value={formData.jour}
-                onChange={handleChange}
-                className="small-input"
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formValeurConstante">
-              <Form.Label>Valeur Constante</Form.Label>
-              <Form.Control
-                type="number"
-                name="valeurConstante"
-                value={formData.valeurConstante}
                 onChange={handleChange}
                 className="small-input"
               />
