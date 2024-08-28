@@ -16,15 +16,21 @@ export default class Possession {
     if (dateActuelle < this.dateDebut) {
       return 0;
     }
+  
+    if (this.dateFin && dateActuelle > this.dateFin) {
+      dateActuelle = this.dateFin;
+    }
+  
     const differenceDate = {
       year: dateActuelle.getFullYear() - this.dateDebut.getFullYear(),
       month: dateActuelle.getMonth() - this.dateDebut.getMonth(),
       day: dateActuelle.getDate() - this.dateDebut.getDate(),
     };
-  
+    
     var raison = differenceDate.year + differenceDate.month / 12 + differenceDate.day / 365;
-
-    const result = this.valeur - this.valeur *(raison * this.tauxAmortissement / 100);
-    return result;
+  
+    const result = this.valeur - this.valeur * (raison * this.tauxAmortissement / 100);
+    return result > 0 ? result : 0;
   }
+  
 }
