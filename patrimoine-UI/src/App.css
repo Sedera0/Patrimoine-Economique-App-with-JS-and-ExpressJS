@@ -1,0 +1,55 @@
+body {
+  font-size: 0.8rem; /* Ajustez cette valeur selon vos besoins (exemple : 14px, 12px, etc.) */
+  line-height: 1.5; /* Ajustez le line-height pour une meilleure lisibilité */
+  scroll-behavior: smooth;
+}
+
+.dateSelection{
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.calcBtn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calcResult{
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 2rem;
+}
+
+.small-input {
+  width: 15rem;
+  height: 1.5rem;
+  margin-bottom: 10px;
+}
+
+
+.form-container{
+  display: flex;
+  border: 1px solid black;
+  position: absolute;
+  width: fit-content;
+  top: 0;
+  background-color: rgb(80, 80, 80);
+  margin-top: 9rem;
+  margin-left: 3rem;
+  color: white;
+  border-radius: 10px;
+}
+
+.text-success{
+  font-weight:bold;
+  border: 2px solid green;
+  width: fit-content;
+  padding: 1rem;
+}
