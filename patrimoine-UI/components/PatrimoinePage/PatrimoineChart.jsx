@@ -1,5 +1,3 @@
-// src/components/PatrimoineChart.jsx
-
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,19 +7,19 @@ import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
-
 const PatrimoineChart = ({ onFetchData }) => {
   const [dateDebut, setDateDebut] = useState(null);
   const [dateFin, setDateFin] = useState(null);
-  const [jour, setJour] = useState('');
+  const [uniteTemps, setUniteTemps] = useState('');  // Renommé pour refléter jour/mois/année
   const [chartData, setChartData] = useState(null);
 
   const handleValidate = async () => {
-    if (dateDebut && dateFin && jour) {
+    if (dateDebut && dateFin && uniteTemps) {
       try {
-        const data = await onFetchData(dateDebut, dateFin, jour);
+        // Appeler la fonction onFetchData avec les paramètres corrects
+        const data = await onFetchData(dateDebut, dateFin, uniteTemps);
 
-        // Assuming data is in the format [{ date: '2024-08-01', value: 100 }, ...]
+        // Assurez-vous que le format des données est [{ date: '2024-08-01', value: 100 }, ...]
         const labels = data.map(item => item.date);
         const values = data.map(item => item.value);
 
@@ -39,7 +37,7 @@ const PatrimoineChart = ({ onFetchData }) => {
         });
       } catch (error) {
         console.error("Error fetching patrimoine data:", error);
-        alert(`An error occurred while fetching data: ${(error).message}`);
+        alert(`An error occurred while fetching data: ${error.message}`);
       }
     } else {
       alert('Please fill all fields!');
@@ -68,26 +66,40 @@ const PatrimoineChart = ({ onFetchData }) => {
             className="form-control"
           />
         </Form.Group>
-        <Form.Group controlId="jour" className="mt-3">
-          <Form.Label>Jour</Form.Label>
+        <Form.Group controlId="uniteTemps" className="mt-3">
+          <Form.Label>Unité de Temps</Form.Label>
           <Form.Control
             as="select"
-            value={jour}
-            onChange={(e) => setJour(e.target.value)}
+            value={uniteTemps}
+            onChange={(e) => setUniteTemps(e.target.value)}
           >
-            <option value="">Select jour</option>
-            <option value="1">Jour 1</option>
-            <option value="2">Jour 2</option>
-            {/* Add more options as needed */}
+            <option value="">Select unité de temps</option>
+            <option value="day">Jour</option>
+            <option value="month">Mois</option>
+            <option value="year">Année</option>
           </Form.Control>
         </Form.Group>
         <Button variant="primary" className="mt-4" onClick={handleValidate}>
-          Validate
+          Valider
         </Button>
       </Form>
       {chartData && (
         <div className="mt-5">
-          <Line data={chartData} options={{ responsive: true }} />
+          <Line data={chartData} options={{ responsive: true,
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Date'
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Valeur'
+      }
+    }
+  } }} />
         </div>
       )}
     </div>

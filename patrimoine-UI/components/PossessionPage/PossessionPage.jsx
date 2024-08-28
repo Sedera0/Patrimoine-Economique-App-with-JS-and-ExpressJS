@@ -17,20 +17,13 @@ const PossessionPage = () => {
       try {
         const response = await fetch('http://localhost:5000/possessions');
         if (!response.ok) {
-          throw new Error(`Network error: ${response.statusText}`);
+          throw new Error(`Erreur réseau : ${response.statusText}`);
         }
-        const result = await response.json();
-
-        const possessionsData = result.flatMap((item) => Array.isArray(item.possessions) ? item.possessions : []);
-
-        if (Array.isArray(possessionsData)) {
-          setPossessions(possessionsData);
-        } else {
-          throw new Error('Data does not contain an array of possessions.');
-        }
+        const data = await response.json();
+        setPossessions(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        alert(`An error occurred while fetching data: ${(error).message}`);
+        console.error("Erreur lors de la récupération des données :", error);
+        alert(`Une erreur est survenue lors de la récupération des données : ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -39,51 +32,51 @@ const PossessionPage = () => {
     fetchData();
   }, []);
 
-  const handleCreate = async (data) => {
+  const handleCreate = async (newData) => {
     try {
       const response = await fetch('http://localhost:5000/possessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(newData),
       });
 
       if (!response.ok) {
         throw new Error(`Network error: ${response.statusText}`);
       }
 
-      const result = await response.json();
-      setPossessions((prevPossessions) => [...prevPossessions, result]);
+      const createdData = await response.json();
+      setPossessions((prevPossessions) => [...prevPossessions, createdData]);
       setShowCreate(false);
     } catch (error) {
       console.error("Error creating data:", error);
-      alert(`An error occurred while creating data: ${(error).message}`);
+      alert(`An error occurred while creating data: ${error.message}`);
     }
   };
 
-  const handleUpdate = async (data) => {
+  const handleUpdate = async (updatedData) => {
     try {
-      const response = await fetch(`http://localhost:5000/possessions/${data.id}`, {
+      const response = await fetch(`http://localhost:5000/possessions/${updatedData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(updatedData),
       });
 
       if (!response.ok) {
         throw new Error(`Network error: ${response.statusText}`);
       }
 
-      const result = await response.json();
+      const updatedPossession = await response.json();
       setPossessions((prevPossessions) =>
-        prevPossessions.map((possession) => (possession.id === data.id ? result : possession))
+        prevPossessions.map((possession) => (possession.id === updatedPossession.id ? updatedPossession : possession))
       );
       setEditingId(null);
     } catch (error) {
       console.error("Error updating data:", error);
-      alert(`An error occurred while updating data: ${(error).message}`);
+      alert(`An error occurred while updating data: ${error.message}`);
     }
   };
 
@@ -100,7 +93,7 @@ const PossessionPage = () => {
       setPossessions((prevPossessions) => prevPossessions.filter((possession) => possession.id !== id));
     } catch (error) {
       console.error("Error deleting data:", error);
-      alert(`An error occurred while deleting data: ${(error).message}`);
+      alert(`An error occurred while deleting data: ${error.message}`);
     }
   };
 
@@ -113,9 +106,9 @@ const PossessionPage = () => {
       <CreateButton showCreate={showCreate} setShowCreate={setShowCreate} />
       {showCreate && <Create onCreate={handleCreate} />}
       <PossessionTable
-          possessions={possessions}
-          onEdit={setEditingId}
-          onDelete={handleDelete}
+        possessions={possessions}
+        onEdit={setEditingId}
+        onDelete={handleDelete}
       />
       {editingId && (
         <Update possessionId={editingId} onUpdate={handleUpdate} />

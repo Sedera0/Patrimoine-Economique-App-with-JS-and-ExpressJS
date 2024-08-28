@@ -16,6 +16,7 @@ const PatrimoinePage = ({ possessions }) => {
   const calculatePatrimoineValue = () => {
     if (selectedDate) {
       try {
+        console.log('Possessions:', possessions);
         const patrimoine = new Patrimoine("John Doe", possessions.map((item) =>
           item.jour
             ? new Flux(
@@ -49,33 +50,41 @@ const PatrimoinePage = ({ possessions }) => {
   };
 
   
-    const fetchPatrimoineData = async (dateDebut, dateFin, jour) => {
-      try {
-        const response = await fetch('http://localhost:5000/patrimoine/range', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            type: 'month', // Exemple de type, ajustez selon vos besoins
-            dateDebut: dateDebut.toISOString(),
-            dateFin: dateFin.toISOString(),
-            jour: parseInt(jour, 10),
-          }),
-        });
-  
-        if (!response.ok) {
-          throw new Error(`Network error: ${response.statusText}`);
-        }
-  
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error("Error fetching patrimoine data:", error);
-        alert(`An error occurred while fetching data: ${(error).message}`);
-        return [];
+  const fetchPatrimoineData = async (dateDebut, dateFin, uniteTemps) => {
+    try {
+      const response = await fetch('http://localhost:5000/patrimoine/range', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          dateDebut,
+          dateFin,
+          type: uniteTemps,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorMessage = await response.text(); // Pour obtenir le message d'erreur complet
+        throw new Error(`Network response was not ok: ${errorMessage}`);
       }
-    };
+    
+      const data = await response.json();
+      
+      // Vous pouvez ajouter une vérification ici pour vous assurer que `data` est bien dans le format attendu
+      // Exemple: si vous attendez un tableau d'objets avec une clé `model` et `data`
+      if (!Array.isArray(data)) {
+        throw new Error('Unexpected response format');
+      }
+    
+      return data;
+    } catch (error) {
+      console.error('Error fetching patrimoine data:', error);
+      // Optionnel: vous pouvez gérer l'erreur plus finement ici, par exemple, en affichant un message à l'utilisateur
+      throw error; // Re-throw l'erreur si vous voulez la gérer ailleurs
+    }
+  };
+  
   
   return (
     <div className='container p-4'>

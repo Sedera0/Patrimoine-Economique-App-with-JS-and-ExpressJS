@@ -1,14 +1,16 @@
 import express from 'express';
 import cors from 'cors';
-import { json } from 'body-parser';
+import bodyParser from 'body-parser';
 import { readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const { json } = bodyParser;
 const app = express();
 const PORT = 5000;
 const DATA_FILE = join(__dirname, 'data.json');
-
-
 
 // Middlewares
 app.use(cors());
@@ -24,9 +26,22 @@ const writeData = async (data) => {
   await writeFile(DATA_FILE, JSON.stringify(data, null, 2));
 };
 
+app.get('/possessions', async (req, res) => {
+  try {
+    const data = await readData();
+    res.json(data.possessions);
+  } catch (error) {
+    console.error("Error in /possessions route:", error);
+    res.status(500).json({ error: 'Failed to retrieve data' });
+  }
+});
+
+
+
 app.get('/patrimoine/:date', async (req, res) => {
   try {
     const { date } = req.params;
+    console.log(`Fetching patrimoine for date: ${date}`);
     const data = await readData();
     
     const targetDate = new Date(date);
@@ -37,21 +52,29 @@ app.get('/patrimoine/:date', async (req, res) => {
       const dateFin = possession.dateFin ? new Date(possession.dateFin) : new Date();
 
       if (dateDebut <= targetDate && dateFin >= targetDate) {
-        valeurPatrimoine += possession.valeur;
+        if (possession.valeurConstante) {
+          // Use valeurConstante if it exists
+          valeurPatrimoine += possession.valeurConstante;
+        } else {
+          // Default to valeur if valeurConstante is not present
+          valeurPatrimoine += possession.valeur;
+        }
       }
     }
 
     res.json({ valeur: valeurPatrimoine });
   } catch (error) {
+    console.error("Error in /patrimoine/:date route:", error);
     res.status(500).json({ error: 'Failed to retrieve data' });
   }
 });
+
 
 // Get all possessions
 app.get('/possessions/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Fetching possession with ID: ${id}`); // Log de l'ID
+    console.log(`Fetching possession with ID: ${id}`); // Log the request
     const data = await readData();
     const possession = data.possessions.find(p => p.id === id);
     if (possession) {
@@ -60,16 +83,17 @@ app.get('/possessions/:id', async (req, res) => {
       res.status(404).json({ message: 'Possession not found' });
     }
   } catch (error) {
+    console.error("Error in /possessions/:id route:", error);
     res.status(500).json({ error: 'Failed to read data' });
   }
 });
 
-
 app.post('/patrimoine/range', async (req, res) => {
   try {
-    const { type, dateDebut, dateFin, jour } = req.body;
+    const { type, dateDebut, dateFin } = req.body;
+    console.log(`Calculating patrimoine range for type: ${type}, from ${dateDebut} to ${dateFin}`); // Log the request
     const data = await readData();
-    
+
     const startDate = new Date(dateDebut);
     const endDate = new Date(dateFin);
     let valeurPatrimoine = 0;
@@ -78,18 +102,33 @@ app.post('/patrimoine/range', async (req, res) => {
       const possessionDateDebut = new Date(possession.dateDebut);
       const possessionDateFin = possession.dateFin ? new Date(possession.dateFin) : new Date();
 
-      // Vérifier si la possession est dans la plage de dates
       if (possessionDateDebut <= endDate && possessionDateFin >= startDate) {
-        // Calculer la valeur en fonction du type et des jours spécifiés
-        if (type === 'month') {
-          const monthStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-          const monthEnd = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
-          
-          if (possessionDateDebut <= monthEnd && possessionDateFin >= monthStart) {
+        switch (type) {
+          case 'day': {
             valeurPatrimoine += possession.valeur;
+            break;
           }
-        } else {
-          // Add other types of calculations if needed
+          case 'month': {
+            const monthStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+            const monthEnd = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+            
+            if (possessionDateDebut <= monthEnd && possessionDateFin >= monthStart) {
+              valeurPatrimoine += possession.valeur;
+            }
+            break;
+          }
+          case 'year': {
+            const yearStart = new Date(startDate.getFullYear(), 0, 1);
+            const yearEnd = new Date(startDate.getFullYear(), 11, 31);
+            
+            if (possessionDateDebut <= yearEnd && possessionDateFin >= yearStart) {
+              valeurPatrimoine += possession.valeur;
+            }
+            break;
+          }
+          default:
+            res.status(400).json({ error: 'Invalid type specified' });
+            return;
         }
       }
     }
@@ -101,16 +140,21 @@ app.post('/patrimoine/range', async (req, res) => {
   }
 });
 
-
 // Create a new possession
 app.post('/possessions', async (req, res) => {
   try {
     const newPossession = req.body;
+    if (!newPossession.id || !newPossession.libelle || !newPossession.dateDebut || !newPossession.valeur) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    console.log(`Creating new possession: ${JSON.stringify(newPossession)}`); // Log the request
     const data = await readData();
     data.possessions.push(newPossession);
     await writeData(data);
     res.json(newPossession);
   } catch (error) {
+    console.error("Error in /possessions route:", error);
     res.status(500).json({ error: 'Failed to save data' });
   }
 });
@@ -118,6 +162,7 @@ app.post('/possessions', async (req, res) => {
 app.post('/possession/:libelle/close', async (req, res) => {
   try {
     const { libelle } = req.params;
+    console.log(`Closing possession with libelle: ${libelle}`); // Log the request
     const data = await readData();
     const now = new Date().toISOString();
     
@@ -131,47 +176,54 @@ app.post('/possession/:libelle/close', async (req, res) => {
     await writeData(data);
     res.json({ message: 'Possession closed successfully' });
   } catch (error) {
+    console.error("Error in /possession/:libelle/close route:", error);
     res.status(500).json({ error: 'Failed to update data' });
   }
 });
 
-
 // Update a possession using libelle to identify it
 app.put('/possessions/', async (req, res) => {
   try {
-    const { libelle, dateFin } = req.body; // On prend libelle et dateFin pour la mise à jour
+    const { libelle, dateFin } = req.body;
+    if (!libelle || !dateFin) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    console.log(`Updating possession with libelle: ${libelle} to dateFin: ${dateFin}`); // Log the request
     const data = await readData();
 
     let found = false;
     data.possessions = data.possessions.map(possession => {
       if (possession.libelle === libelle) {
         found = true;
-        return { ...possession, dateFin }; // Met à jour uniquement dateFin
+        return { ...possession, dateFin }; // Update only dateFin
       }
       return possession;
     });
 
     if (found) {
       await writeData(data);
-      res.json({ libelle, dateFin }); // Retourne les données mises à jour
+      res.json({ libelle, dateFin }); // Return updated data
     } else {
       res.status(404).json({ message: 'Possession not found' });
     }
   } catch (error) {
+    console.error("Error in /possessions route:", error);
     res.status(500).json({ error: 'Failed to update data' });
   }
 });
-
 
 // Delete a possession
 app.delete('/possessions/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(`Deleting possession with ID: ${id}`); // Log the request
     const data = await readData();
     data.possessions = data.possessions.filter(possession => possession.id !== id);
     await writeData(data);
     res.status(204).send();
   } catch (error) {
+    console.error("Error in /possessions/:id route:", error);
     res.status(500).json({ error: 'Failed to delete data' });
   }
 });
