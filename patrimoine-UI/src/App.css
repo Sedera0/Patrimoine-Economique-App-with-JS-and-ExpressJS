@@ -15,16 +15,17 @@ body {
 .calcBtn{
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center;;
 }
 
 .calcResult{
   display: flex;
   flex-direction: row;
   text-align: center;
+  align-items: center;
   justify-content: center;
-  margin-top: 2rem;
   gap: 2rem;
+  margin-top: 1rem;
 }
 
 .small-input {
@@ -47,9 +48,10 @@ body {
   border-radius: 10px;
 }
 
-.text-success{
-  font-weight:bold;
-  border: 2px solid green;
-  width: fit-content;
-  padding: 1rem;
+.text-succes{
+  background-color: green;
+  color: wheat;
+  border-radius: 10px;
+  padding: 0.1rem 1rem;
+  width: auto;
 }

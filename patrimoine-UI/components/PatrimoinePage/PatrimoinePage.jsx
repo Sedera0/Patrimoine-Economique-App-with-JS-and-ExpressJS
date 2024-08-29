@@ -89,6 +89,7 @@ const PatrimoinePage = ({ possessions }) => {
   return (
     <div className='container p-4'>
       <PatrimoineChart onFetchData={fetchPatrimoineData} />
+      <h4 className='m-5'>Calculez votre patrimoine</h4>
       <DateSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <CalculateButton calculatePatrimoineValue={calculatePatrimoineValue} />
       <PatrimoineResult patrimoineValue={patrimoineValue} />

@@ -57,18 +57,22 @@ const PossessionPage = () => {
 
   const handleUpdate = async (updatedData) => {
     try {
-      const response = await fetch(`http://localhost:5000/possessions/${updatedData.id}`, {
+      // Préparer les données pour l'envoi
+      const { id, libelle, dateFin } = updatedData;
+  
+      const response = await fetch(`http://localhost:5000/possessions/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedData),
+        body: JSON.stringify({ libelle, dateFin }), // Envoyer uniquement libelle et dateFin
       });
-
+  
       if (!response.ok) {
-        throw new Error(`Network error: ${response.statusText}`);
+        const errorText = await response.text(); // Récupérer et afficher le message d'erreur
+        throw new Error(`Network error: ${response.statusText} - ${errorText}`);
       }
-
+  
       const updatedPossession = await response.json();
       setPossessions((prevPossessions) =>
         prevPossessions.map((possession) => (possession.id === updatedPossession.id ? updatedPossession : possession))
@@ -79,6 +83,7 @@ const PossessionPage = () => {
       alert(`An error occurred while updating data: ${error.message}`);
     }
   };
+  
 
   const handleDelete = async (id) => {
     try {

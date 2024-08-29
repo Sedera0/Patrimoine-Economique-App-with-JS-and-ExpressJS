@@ -52,10 +52,9 @@ const Update = ({ possessionId, onUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Assurez-vous que le libelle est envoyé avec les données mises à jour
       const updatedData = {
         possesseur: { nom: formData.possesseur },
-        libelle: formData.libelle,  // Vous devez envoyer le libelle pour identifier la possession
+        libelle: formData.libelle,
         valeur: formData.valeur,
         dateDebut: formData.dateDebut,
         dateFin: formData.dateFin || null,
@@ -64,15 +63,12 @@ const Update = ({ possessionId, onUpdate }) => {
         valeurConstante: formData.valeurConstante || null,
       };
   
-      const response = await fetch('http://localhost:5000/possessions', {
+      const response = await fetch(`http://localhost:5000/possessions/${possessionId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          libelle: formData.libelle, // Libelle utilisé pour identifier la possession
-          updatedData
-        }),
+        body: JSON.stringify(updatedData),
       });
   
       if (!response.ok) {

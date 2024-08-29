@@ -1,0 +1,10 @@
+/* Header.css */
+.brand-large {
+    font-size: 1.5rem; /* Increase the size of the brand text */
+    text-align: center; /* Center align the text */
+  }
+  
+  .nav-link-small {
+    font-size: 0.9rem; /* Decrease the font size of the nav links */
+  }
+  

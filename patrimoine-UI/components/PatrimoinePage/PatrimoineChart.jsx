@@ -4,17 +4,20 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Button, Form } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js';
+import './PatrimoineChart.css'
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
 const PatrimoineChart = ({ onFetchData }) => {
   const [dateDebut, setDateDebut] = useState(null);
   const [dateFin, setDateFin] = useState(null);
-  const [uniteTemps, setUniteTemps] = useState('');  // Renommé pour refléter jour/mois/année
+  const [uniteTemps, setUniteTemps] = useState('');  // Unité de temps : jour, mois, année
   const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(false);  // Pour indiquer le chargement
 
   const handleValidate = async () => {
     if (dateDebut && dateFin && uniteTemps) {
+      setLoading(true);  // Début du chargement
       try {
         // Appeler la fonction onFetchData avec les paramètres corrects
         const data = await onFetchData(dateDebut, dateFin, uniteTemps);
@@ -38,17 +41,19 @@ const PatrimoineChart = ({ onFetchData }) => {
       } catch (error) {
         console.error("Error fetching patrimoine data:", error);
         alert(`An error occurred while fetching data: ${error.message}`);
+      } finally {
+        setLoading(false);  // Fin du chargement
       }
     } else {
-      alert('Please fill all fields!');
+      alert('Veuillez remplir tous les champs !');
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4">Visualisez Votre Patrimoine</h2>
+    <div className="container mt-3">
+      <h4>Projetez-vous!</h4>
       <Form>
-        <Form.Group controlId="dateDebut">
+        <Form.Group controlId="dateDebut" className='form1'>
           <Form.Label>Date Début</Form.Label>
           <DatePicker
             selected={dateDebut}
@@ -57,7 +62,7 @@ const PatrimoineChart = ({ onFetchData }) => {
             className="form-control"
           />
         </Form.Group>
-        <Form.Group controlId="dateFin" className="mt-3">
+        <Form.Group controlId="dateFin" className='form1'>
           <Form.Label>Date Fin</Form.Label>
           <DatePicker
             selected={dateFin}
@@ -66,40 +71,27 @@ const PatrimoineChart = ({ onFetchData }) => {
             className="form-control"
           />
         </Form.Group>
-        <Form.Group controlId="uniteTemps" className="mt-3">
+        <Form.Group controlId="uniteTemps" className='form1'>
           <Form.Label>Unité de Temps</Form.Label>
           <Form.Control
+            className='form-control'
             as="select"
             value={uniteTemps}
             onChange={(e) => setUniteTemps(e.target.value)}
           >
-            <option value="">Select unité de temps</option>
+            <option value="">...</option>
             <option value="day">Jour</option>
             <option value="month">Mois</option>
             <option value="year">Année</option>
           </Form.Control>
         </Form.Group>
-        <Button variant="primary" className="mt-4" onClick={handleValidate}>
-          Valider
+        <Button variant="primary" className="validateBtn" onClick={handleValidate} disabled={loading}>
+          {loading ? 'Chargement...' : 'Valider'}
         </Button>
       </Form>
       {chartData && (
-        <div className="mt-5">
-          <Line data={chartData} options={{ responsive: true,
-  scales: {
-    x: {
-      title: {
-        display: true,
-        text: 'Date'
-      }
-    },
-    y: {
-      title: {
-        display: true,
-        text: 'Valeur'
-      }
-    }
-  } }} />
+        <div className="chart">
+          <Line data={chartData} />
         </div>
       )}
     </div>

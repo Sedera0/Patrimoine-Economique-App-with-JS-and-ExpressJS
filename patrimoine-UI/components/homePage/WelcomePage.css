@@ -1,0 +1,29 @@
+/* WelcomePage.css */
+.welcome-container {
+    background-color: #f0f8ff; /* Light blue background color for a welcoming feel */
+    height: 90vh; /* Full viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .welcome-content {
+    background: rgba(255, 255, 255, 0.8); /* Slightly transparent white background for text area */
+    padding: 30px;
+    border-radius: 15px; /* Rounded corners for a softer look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for a subtle depth effect */
+  }
+  
+  .welcome-title {
+    color: #008280; /* Dark indigo color for a warm and inviting look */
+    margin-bottom: 20px;
+    font-weight: bold; /* Make the title bold */
+  }
+  
+  .welcome-subtitle {
+    color: #000000; /* Darker text for better readability */
+    font-size: 1.4rem; /* Slightly larger subtitle */
+    margin-bottom: 0;
+  }
+  

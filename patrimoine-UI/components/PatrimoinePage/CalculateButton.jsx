@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 function CalculateButton({ calculatePatrimoineValue }) {
   return (
     <div className='calcBtn'>
-      <Button variant="secondary" onClick={calculatePatrimoineValue}>
+      <Button className='calcBtno' variant="secondary" onClick={calculatePatrimoineValue}>
         Calculer le patrimoine
       </Button>
     </div>

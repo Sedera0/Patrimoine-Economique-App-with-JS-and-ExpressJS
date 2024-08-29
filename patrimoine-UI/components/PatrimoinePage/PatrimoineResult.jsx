@@ -4,7 +4,7 @@ function PatrimoineResult({ patrimoineValue }) {
   return (
     <div className='calcResult'>
       <p>Patrimoine du possesseur : </p>
-      <span className='text-success'>{patrimoineValue.toFixed(2)} Ariary</span>
+      <span className='text-succes'>{patrimoineValue.toFixed(2)} Ariary</span>
     </div>
   );
 }
