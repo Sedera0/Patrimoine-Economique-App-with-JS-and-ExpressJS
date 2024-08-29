@@ -49,11 +49,19 @@ function PossessionTable({ possessions, onEdit, onDelete }) {
             <tr key={item.id} className='text-center'>
               <td>{item.id}</td>
               <td>{item.libelle}</td>
-              <td className='text-end'>{item.valeur.toFixed(2)}</td>
+              <td className='text-end'>
+                {item.valeur !== undefined && typeof item.valeur === 'number'
+                  ? item.valeur.toFixed(2)
+                  : 'N/A'}
+              </td>
               <td>{new Date(item.dateDebut).toLocaleDateString()}</td>
               <td>{item.dateFin ? new Date(item.dateFin).toLocaleDateString() : "-"}</td>
               <td>{item.tauxAmortissement ?? "-"}</td>
-              <td className='text-end'>{valeurActuelle.toFixed(2)}</td>
+              <td className='text-end'>
+                {valeurActuelle !== undefined && typeof valeurActuelle === 'number'
+                  ? valeurActuelle.toFixed(2)
+                  : 'N/A'}
+              </td>
               <td>
                 <Button variant="info" onClick={() => onEdit(item.id)} className='btn-sm'>Modifier</Button>{' '}
                 <Delete possessionId={item.id} onDelete={onDelete} />

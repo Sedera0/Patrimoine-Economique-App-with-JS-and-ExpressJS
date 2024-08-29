@@ -57,32 +57,56 @@ const PossessionPage = () => {
 
   const handleUpdate = async (updatedData) => {
     try {
-      // Préparer les données pour l'envoi
       const { id, libelle, dateFin } = updatedData;
   
+      // Étape 1: Récupérer la possession complète du serveur
+      const getResponse = await fetch(`http://localhost:5000/possessions/${id}`);
+      if (!getResponse.ok) {
+        throw new Error(`Erreur réseau lors de la récupération: ${getResponse.statusText}`);
+      }
+      const currentData = await getResponse.json();
+  
+      // Étape 2: Mettre à jour uniquement libelle et dateFin dans les données récupérées
+      const updatedPossession = {
+        ...currentData,
+        libelle,
+        dateFin,
+      };
+  
+      console.log(`Updating possession with ID: ${id}`);
+      console.log(`Data being sent: ${JSON.stringify(updatedPossession)}`);
+  
+      // Étape 3: Envoyer toutes les données mises à jour au serveur
       const response = await fetch(`http://localhost:5000/possessions/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ libelle, dateFin }), // Envoyer uniquement libelle et dateFin
+        body: JSON.stringify(updatedPossession), // Envoyer toutes les données mises à jour
       });
   
       if (!response.ok) {
-        const errorText = await response.text(); // Récupérer et afficher le message d'erreur
+        const errorText = await response.text();
         throw new Error(`Network error: ${response.statusText} - ${errorText}`);
       }
   
-      const updatedPossession = await response.json();
+      const updatedDataFromServer = await response.json();
+      console.log('Updated possession:', updatedDataFromServer);
+  
+      // Mettre à jour l'état avec la possession mise à jour
       setPossessions((prevPossessions) =>
-        prevPossessions.map((possession) => (possession.id === updatedPossession.id ? updatedPossession : possession))
+        prevPossessions.map((possession) =>
+          possession.id === updatedDataFromServer.id ? updatedDataFromServer : possession
+        )
       );
+  
       setEditingId(null);
     } catch (error) {
       console.error("Error updating data:", error);
       alert(`An error occurred while updating data: ${error.message}`);
     }
   };
+  
   
 
   const handleDelete = async (id) => {

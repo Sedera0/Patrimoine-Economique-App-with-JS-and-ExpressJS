@@ -96,16 +96,29 @@ app.post('/patrimoine/range', async (req, res) => {
 
     const startDate = new Date(dateDebut);
     const endDate = new Date(dateFin);
-    let valeurPatrimoine = 0;
+    let valeursPatrimoine = {};
 
     for (const possession of data.possessions) {
       const possessionDateDebut = new Date(possession.dateDebut);
       const possessionDateFin = possession.dateFin ? new Date(possession.dateFin) : new Date();
+      let value = 0;
 
+      // Check if the possession is within the date range
       if (possessionDateDebut <= endDate && possessionDateFin >= startDate) {
         switch (type) {
           case 'day': {
-            valeurPatrimoine += possession.valeur;
+            const daysInRange = Math.max(0, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))) + 1;
+            value = possession.valeur / daysInRange; // Distribute value across the days in range
+            const currentDate = new Date(startDate);
+
+            while (currentDate <= endDate) {
+              const dateString = currentDate.toISOString().split('T')[0];
+              if (!valeursPatrimoine[dateString]) {
+                valeursPatrimoine[dateString] = 0;
+              }
+              valeursPatrimoine[dateString] += value;
+              currentDate.setDate(currentDate.getDate() + 1);
+            }
             break;
           }
           case 'month': {
@@ -113,7 +126,11 @@ app.post('/patrimoine/range', async (req, res) => {
             const monthEnd = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
             
             if (possessionDateDebut <= monthEnd && possessionDateFin >= monthStart) {
-              valeurPatrimoine += possession.valeur;
+              const monthKey = `${startDate.getFullYear()}-${startDate.getMonth() + 1}`;
+              if (!valeursPatrimoine[monthKey]) {
+                valeursPatrimoine[monthKey] = 0;
+              }
+              valeursPatrimoine[monthKey] += possession.valeur;
             }
             break;
           }
@@ -122,7 +139,11 @@ app.post('/patrimoine/range', async (req, res) => {
             const yearEnd = new Date(startDate.getFullYear(), 11, 31);
             
             if (possessionDateDebut <= yearEnd && possessionDateFin >= yearStart) {
-              valeurPatrimoine += possession.valeur;
+              const yearKey = `${startDate.getFullYear()}`;
+              if (!valeursPatrimoine[yearKey]) {
+                valeursPatrimoine[yearKey] = 0;
+              }
+              valeursPatrimoine[yearKey] += possession.valeur;
             }
             break;
           }
@@ -133,12 +154,15 @@ app.post('/patrimoine/range', async (req, res) => {
       }
     }
 
-    res.json({ valeur: valeurPatrimoine });
+    // Convertir l'objet en tableau de résultats
+    const result = Object.entries(valeursPatrimoine).map(([date, value]) => ({ date, value }));
+    res.json(result);
   } catch (error) {
     console.error("Error in /patrimoine/range route:", error);
     res.status(500).json({ error: 'Failed to retrieve data' });
   }
 });
+
 
 // Create a new possession
 app.post('/possessions', async (req, res) => {
@@ -181,37 +205,47 @@ app.post('/possession/:libelle/close', async (req, res) => {
   }
 });
 
-// Update a possession using libelle to identify it
-app.put('/possessions/', async (req, res) => {
+
+app.put('/possessions/:id', async (req, res) => {
   try {
-    const { libelle, dateFin } = req.body;
-    if (!libelle || !dateFin) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    const { id } = req.params; // Get id from the URL params
+    const { libelle, dateFin } = req.body; // Seuls les champs devant être modifiés
+
+    if (!id || !libelle) {
+      return res.status(400).json({ error: 'ID and libelle are required' });
     }
 
-    console.log(`Updating possession with libelle: ${libelle} to dateFin: ${dateFin}`); // Log the request
     const data = await readData();
-
     let found = false;
+    let updatedPossession;
+
     data.possessions = data.possessions.map(possession => {
-      if (possession.libelle === libelle) {
+      if (possession.id === id) { // Match possession by ID
         found = true;
-        return { ...possession, dateFin }; // Update only dateFin
+        // Mettre à jour uniquement les champs fournis
+        updatedPossession = {
+          ...possession,
+          libelle: libelle || possession.libelle,
+          dateFin: dateFin || possession.dateFin, // Update only the fields that are provided
+        };
+        return updatedPossession; 
       }
       return possession;
     });
 
     if (found) {
       await writeData(data);
-      res.json({ libelle, dateFin }); // Return updated data
+      res.json(updatedPossession); // Retourner l'objet entier mis à jour
     } else {
       res.status(404).json({ message: 'Possession not found' });
     }
   } catch (error) {
-    console.error("Error in /possessions route:", error);
+    console.error("Error in /possessions/:id route:", error);
     res.status(500).json({ error: 'Failed to update data' });
   }
 });
+
+
 
 // Delete a possession
 app.delete('/possessions/:id', async (req, res) => {
