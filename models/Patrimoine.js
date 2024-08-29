@@ -21,7 +21,7 @@ export default class Patrimoine {
   }
   removePossession(possession) {
     this.possessions = this.possessions.filter(
-      (p) => p.id !== possession.id,
+      (p) => p.libelle !== possession.libelle,
     );
-  }  
+  }
 }

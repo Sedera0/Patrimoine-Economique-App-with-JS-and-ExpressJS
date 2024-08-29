@@ -16,16 +16,15 @@ export default class Possession {
     if (dateActuelle < this.dateDebut) {
       return 0;
     }
-    
     const differenceDate = {
       year: dateActuelle.getFullYear() - this.dateDebut.getFullYear(),
       month: dateActuelle.getMonth() - this.dateDebut.getMonth(),
       day: dateActuelle.getDate() - this.dateDebut.getDate(),
     };
   
-    const raison = differenceDate.year + differenceDate.month / 12 + differenceDate.day / 365;
-
+    var raison = differenceDate.year + differenceDate.month / 12 + differenceDate.day / 365;
     const result = this.valeur - this.valeur * (raison * this.tauxAmortissement / 100);
-    return result;
+    return Math.max(result, 0); // La valeur ne peut pas être négative
   }
+  
 }

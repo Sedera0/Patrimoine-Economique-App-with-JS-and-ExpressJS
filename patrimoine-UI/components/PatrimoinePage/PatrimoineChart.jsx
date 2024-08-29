@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Button, Form } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js';
-import './PatrimoineChart.css'
+import './PatrimoineChart.css';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
@@ -19,13 +19,21 @@ const PatrimoineChart = ({ onFetchData }) => {
     if (dateDebut && dateFin && uniteTemps) {
       setLoading(true);  // Début du chargement
       try {
-        // Appeler la fonction onFetchData avec les paramètres corrects
         const data = await onFetchData(dateDebut, dateFin, uniteTemps);
-
-        // Assurez-vous que le format des données est [{ date: '2024-08-01', value: 100 }, ...]
-        const labels = data.map(item => item.date);
-        const values = data.map(item => item.value);
-
+        
+        // Test avec des données variées
+        const testData = [
+          { date: '2024-01-01', value: 100 },
+          { date: '2024-01-02', value: 150 },
+          { date: '2024-01-03', value: 200 },
+          { date: '2024-01-04', value: 180 },
+          { date: '2024-01-05', value: 220 },
+          // Ajoutez plus de données pour tester
+        ];
+  
+        const labels = testData.map(item => item.date);
+        const values = testData.map(item => item.value);
+  
         setChartData({
           labels: labels,
           datasets: [
@@ -48,6 +56,8 @@ const PatrimoineChart = ({ onFetchData }) => {
       alert('Veuillez remplir tous les champs !');
     }
   };
+  
+  
 
   return (
     <div className="container mt-3">

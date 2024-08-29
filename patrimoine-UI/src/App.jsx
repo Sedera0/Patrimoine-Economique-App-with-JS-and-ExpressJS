@@ -14,7 +14,7 @@ function App() {
     <Router>
       <Header />
       <Routes>
-        <Route path="/" element={<WelcomePage />} /> {/* Default route */}
+        <Route path="/" element={<WelcomePage />} />
         <Route path="/possessions" element={<PossessionPage />} />
         <Route path="/patrimoine" element={<PatrimoinePage />} />
       </Routes>
