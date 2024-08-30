@@ -1,5 +1,3 @@
-// src/pages/PossessionPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import PossessionTable from './PossessionTable.jsx';
 import CreateButton from './CreateButton.jsx';
@@ -82,7 +80,7 @@ const PossessionPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedPossession), // Envoyer toutes les données mises à jour
+        body: JSON.stringify(updatedPossession),
       });
   
       if (!response.ok) {
@@ -93,7 +91,6 @@ const PossessionPage = () => {
       const updatedDataFromServer = await response.json();
       console.log('Updated possession:', updatedDataFromServer);
   
-      // Mettre à jour l'état avec la possession mise à jour
       setPossessions((prevPossessions) =>
         prevPossessions.map((possession) =>
           possession.id === updatedDataFromServer.id ? updatedDataFromServer : possession

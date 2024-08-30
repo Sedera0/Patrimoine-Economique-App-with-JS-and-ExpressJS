@@ -1,8 +1,6 @@
-// src/components/WelcomePage/WelcomePage.jsx
-
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import './WelcomePage.css'; // Import the custom CSS file for additional styles
+import './WelcomePage.css';
 
 const WelcomePage = () => {
   return (

@@ -21,7 +21,7 @@ const Update = ({ possessionId, onUpdate }) => {
           throw new Error(`Erreur réseau : ${response.statusText}`);
         }
         const data = await response.json();
-        // Adapter les données pour le formulaire
+       
         setFormData({
           possesseur: data.possesseur?.nom || '',
           libelle: data.libelle || '',
@@ -75,7 +75,7 @@ const Update = ({ possessionId, onUpdate }) => {
         throw new Error(`Erreur réseau : ${response.statusText}`);
       }
       const data = await response.json();
-      onUpdate(data); // Passez les données mises à jour à la fonction onUpdate
+      onUpdate(data);
   
     } catch (error) {
       console.error("Erreur lors de la mise à jour :", error);

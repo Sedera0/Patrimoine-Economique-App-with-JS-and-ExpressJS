@@ -11,28 +11,27 @@ ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 const PatrimoineChart = ({ onFetchData }) => {
   const [dateDebut, setDateDebut] = useState(null);
   const [dateFin, setDateFin] = useState(null);
-  const [uniteTemps, setUniteTemps] = useState('');  // Unité de temps : jour, mois, année
+  const [uniteTemps, setUniteTemps] = useState('');
   const [chartData, setChartData] = useState(null);
-  const [loading, setLoading] = useState(false);  // Pour indiquer le chargement
+  const [loading, setLoading] = useState(false);
 
   const handleValidate = async () => {
     if (dateDebut && dateFin && uniteTemps) {
-      setLoading(true);  // Début du chargement
+      setLoading(true);
       try {
-        const data = await onFetchData(dateDebut.toISOString().split('T')[0], dateFin.toISOString().split('T')[0], uniteTemps);
-        console.log('Données reçues:', data);  // Vérifiez ici les données reçues
-  
-        // Assurez-vous que les données reçues sont valides et reflètent des valeurs variées
+        const data = await onFetchData(
+          dateDebut.toISOString().split('T')[0], 
+          dateFin.toISOString().split('T')[0], 
+          uniteTemps
+        );
+
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error('Les données reçues ne sont pas valides ou sont vides');
         }
-  
+
         const labels = data.map(item => item.date);
         const values = data.map(item => item.value);
-  
-        console.log('Labels:', labels);  // Vérifiez ici les labels
-        console.log('Values:', values);  // Vérifiez ici les valeurs
-  
+
         setChartData({
           labels: labels,
           datasets: [
@@ -46,16 +45,15 @@ const PatrimoineChart = ({ onFetchData }) => {
           ],
         });
       } catch (error) {
-        console.error("Error fetching patrimoine data:", error);
-        alert(`An error occurred while fetching data: ${error.message}`);
+        console.error("Erreur lors de la récupération des données de patrimoine :", error);
+        alert(`Une erreur est survenue lors de la récupération des données : ${error.message}`);
       } finally {
-        setLoading(false);  // Fin du chargement
+        setLoading(false);
       }
     } else {
       alert('Veuillez remplir tous les champs !');
     }
   };
-  
 
   return (
     <div className="container mt-3">

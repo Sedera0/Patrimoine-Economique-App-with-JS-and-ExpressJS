@@ -53,10 +53,8 @@ app.get('/patrimoine/:date', async (req, res) => {
 
       if (dateDebut <= targetDate && dateFin >= targetDate) {
         if (possession.valeurConstante) {
-          // Use valeurConstante if it exists
           valeurPatrimoine += possession.valeurConstante;
         } else {
-          // Default to valeur if valeurConstante is not present
           valeurPatrimoine += possession.valeur;
         }
       }
@@ -74,7 +72,7 @@ app.get('/patrimoine/:date', async (req, res) => {
 app.get('/possessions/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Fetching possession with ID: ${id}`); // Log the request
+    console.log(`Fetching possession with ID: ${id}`);
     const data = await readData();
     const possession = data.possessions.find(p => p.id === id);
     if (possession) {
@@ -103,12 +101,11 @@ app.post('/patrimoine/range', async (req, res) => {
       const possessionDateFin = possession.dateFin ? new Date(possession.dateFin) : new Date(); // Date actuelle si possession.dateFin est manquante
       let value = 0;
 
-      // Check if the possession is within the date range
       if (possessionDateDebut <= endDate && possessionDateFin >= startDate) {
         switch (type) {
           case 'day': {
             const daysInRange = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-            value = possession.valeur / daysInRange; // Distribute value across the days in range
+            value = possession.valeur / daysInRange;
             const currentDate = new Date(startDate);
 
             while (currentDate <= endDate) {
@@ -174,7 +171,7 @@ app.post('/possessions', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    console.log(`Creating new possession: ${JSON.stringify(newPossession)}`); // Log the request
+    console.log(`Creating new possession: ${JSON.stringify(newPossession)}`);
     const data = await readData();
     data.possessions.push(newPossession);
     await writeData(data);
@@ -188,7 +185,7 @@ app.post('/possessions', async (req, res) => {
 app.post('/possession/:libelle/close', async (req, res) => {
   try {
     const { libelle } = req.params;
-    console.log(`Closing possession with libelle: ${libelle}`); // Log the request
+    console.log(`Closing possession with libelle: ${libelle}`);
     const data = await readData();
     const now = new Date().toISOString();
     
@@ -210,8 +207,8 @@ app.post('/possession/:libelle/close', async (req, res) => {
 
 app.put('/possessions/:id', async (req, res) => {
   try {
-    const { id } = req.params; // Get id from the URL params
-    const { libelle, dateFin } = req.body; // Seuls les champs devant être modifiés
+    const { id } = req.params;
+    const { libelle, dateFin } = req.body;
 
     if (!id || !libelle) {
       return res.status(400).json({ error: 'ID and libelle are required' });
@@ -222,13 +219,13 @@ app.put('/possessions/:id', async (req, res) => {
     let updatedPossession;
 
     data.possessions = data.possessions.map(possession => {
-      if (possession.id === id) { // Match possession by ID
+      if (possession.id === id) {
         found = true;
         // Mettre à jour uniquement les champs fournis
         updatedPossession = {
           ...possession,
           libelle: libelle || possession.libelle,
-          dateFin: dateFin || possession.dateFin, // Update only the fields that are provided
+          dateFin: dateFin || possession.dateFin,
         };
         return updatedPossession; 
       }
@@ -253,7 +250,7 @@ app.put('/possessions/:id', async (req, res) => {
 app.delete('/possessions/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Deleting possession with ID: ${id}`); // Log the request
+    console.log(`Deleting possession with ID: ${id}`);
     const data = await readData();
     data.possessions = data.possessions.filter(possession => possession.id !== id);
     await writeData(data);

@@ -8,7 +8,6 @@ export default class Possession {
     this.tauxAmortissement = tauxAmortissement;
   }
 
-  // Méthode pour vérifier si la possession est active à une date donnée
   isActiveOn(date) {
     if (date < this.dateDebut) return false;
     if (this.dateFin && date > this.dateFin) return false;
@@ -31,6 +30,6 @@ export default class Possession {
   
     var raison = differenceDate.year + differenceDate.month / 12 + differenceDate.day / 365;
     const result = this.valeur - this.valeur * (raison * this.tauxAmortissement / 100);
-    return Math.max(result, 0); // La valeur ne peut pas être négative
+    return Math.max(result, 0);
   }
 }

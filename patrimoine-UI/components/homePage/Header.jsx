@@ -1,9 +1,7 @@
-// src/components/Header.jsx
-
 import React from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
-import './Header.css'; // Import the custom CSS file for additional styles
+import './Header.css';
 
 const Header = () => {
   return (
@@ -12,8 +10,7 @@ const Header = () => {
         <Nav className="flex-grow-1 d-flex justify-content-end">
           <Nav.Link as={NavLink} to="/patrimoine" className="nav-link-small">Visualiser Votre Patrimoine</Nav.Link>
         </Nav>
-        
-        {/* Make Navbar.Brand clickable by using NavLink */}
+      
         <Navbar.Brand as={NavLink} to="/" className="mx-3 brand-large">
           myPATRI-MOINE
         </Navbar.Brand>

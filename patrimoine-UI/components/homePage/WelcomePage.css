@@ -1,53 +1,46 @@
-/* src/components/WelcomePage/WelcomePage.css */
-
 body {
-  font-family: 'SUSE', sans-serif; /* Example: Using Google Font 'SUSE' */
+  font-family: 'SUSE', sans-serif;
 }
 
-/* General container styling */
 .welcome-container {
-  background: #f9f5f2; /* Soft, warm background color */
+  background: #f9f5f2;
   height: 90vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Keyframes for shadow moving left to right */
 @keyframes shadowMove {
   0% {
-    box-shadow: -10px 4px 8px rgba(0, 0, 0, 0.1); /* Shadow on the left */
+    box-shadow: -10px 4px 8px rgba(0, 0, 0, 0.1);
   }
   50% {
-    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2); /* Shadow in the center */
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
   }
   100% {
-    box-shadow: 10px 4px 8px rgba(0, 0, 0, 0.1); /* Shadow on the right */
+    box-shadow: 10px 4px 8px rgba(0, 0, 0, 0.1)
   }
 }
 
-/* Styling for the welcome content */
 .welcome-content {
-  background: #ffffff; /* Light background for the content area */
-  border-radius: 15px; /* Rounded corners for a softer look */
+  background: #ffffff;
+  border-radius: 15px;
   width: 75vw;
   height: 40vh;
-  animation: shadowMove 3s infinite alternate-reverse; /* Infinite horizontal shadow animation */
+  animation: shadowMove 3s infinite alternate-reverse;
 }
 
-/* Styling for the title */
 .welcome-title {
   text-align: center;
   width: auto;
   font-size: 4rem;
-  font-family: 'Arial', sans-serif; /* Use a friendly, readable font */
-  font-weight: bold; /* Bold title to grab attention */
-  color: #bc8d45; /* Dark gray for good contrast */
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #bc8d45;
 }
 
-/* Styling for the subtitle */
 .welcome-subtitle {
-  font-family: 'Arial', sans-serif; /* Consistent font with title */
-  color: #112a2e; /* Subtle color for the subtitle */
-  margin-top: 0.5rem; /* Space between title and subtitle */
+  font-family: 'Arial', sans-serif;
+  color: #112a2e;
+  margin-top: 0.5rem;
 }

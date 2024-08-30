@@ -10,34 +10,26 @@ import PatrimoineChart from './PatrimoineChart.jsx';
 const PatrimoinePage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [patrimoineValue, setPatrimoineValue] = useState(0);
-  const [possessions, setPossessions] = useState([]); // État pour stocker les données des possessions
+  const [possessions, setPossessions] = useState([]);
 
-  // Récupérer les données des possessions depuis un serveur ou une source locale
   useEffect(() => {
     const fetchPossessionsData = async () => {
       try {
-        const response = await fetch('/api/possessions'); // Remplacez par votre source de données
-        if (!response.ok) {
-          throw new Error('Erreur de réseau');
-        }
-        const data = await response.json();
-        console.log('Possessions récupérées :', data);
+        const response = await fetch('/api/possessions');
+        if (!response.ok) throw new Error('Erreur de réseau');
 
-        // Validation et formatage des données
-        if (Array.isArray(data) && data.length > 0) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
           const validPossessions = data.filter(possession => 
             possession.id && possession.libelle && typeof possession.valeur === 'number' && possession.dateDebut
           );
           
           if (validPossessions.length > 0) {
             setPossessions(validPossessions);
-            console.log('Possessions mises à jour :', validPossessions);
           } else {
-            console.error('Aucune possession valide trouvée dans les données.', data);
             alert('Données des possessions non valides.');
           }
         } else {
-          console.error('Données des possessions non valides :', data);
           alert('Données des possessions non valides.');
         }
       } catch (error) {
@@ -49,72 +41,60 @@ const PatrimoinePage = () => {
   }, []);
 
   const calculatePatrimoineValue = () => {
-    console.log('Calcul du patrimoine :', { selectedDate, possessions });
-  
-    if (selectedDate) {
-      try {
-        if (!Array.isArray(possessions) || possessions.length === 0) {
-          console.error('Les données des possessions ne sont pas un tableau ou sont vides :', possessions);
-          alert('Aucune donnée de possession disponible pour le calcul.');
-          return;
-        }
-  
-        // Filtrer les possessions et flux actifs à la date sélectionnée
-        const possessionsActives = possessions.filter(item => {
-          const dateDebut = new Date(item.dateDebut);
-          const dateFin = item.dateFin ? new Date(item.dateFin) : null;
-          return dateDebut <= selectedDate && (!dateFin || selectedDate <= dateFin);
-        });
-  
-        // Création d'instances de Possession et Flux basées sur les données de possession actives
-        const patrimoine = new Patrimoine(
-          "John Doe",
-          possessionsActives.map((item) =>
-            item.jour
-              ? new Flux(
-                  item.possesseur ? item.possesseur.nom : "Inconnu",
-                  item.libelle,
-                  item.valeurConstante,
-                  new Date(item.dateDebut),
-                  item.dateFin ? new Date(item.dateFin) : null,
-                  item.tauxAmortissement || 0,
-                  item.jour
-                )
-              : new Possession(
-                  item.possesseur ? item.possesseur.nom : "Inconnu",
-                  item.libelle,
-                  item.valeur,
-                  new Date(item.dateDebut),
-                  item.dateFin ? new Date(item.dateFin) : null,
-                  item.tauxAmortissement || 0
-                )
-          )
-        );
-  
-        const patValue = patrimoine.getValeur(selectedDate);
-        setPatrimoineValue(patValue);
-      } catch (error) {
-        console.error("Erreur lors du calcul du patrimoine :", error);
-        alert("Une erreur est survenue lors du calcul du patrimoine.");
-      }
-    } else {
+    if (!selectedDate) {
       alert("Veuillez sélectionner une date !");
+      return;
+    }
+
+    try {
+      if (!Array.isArray(possessions) || possessions.length === 0) {
+        alert('Aucune donnée de possession disponible pour le calcul.');
+        return;
+      }
+
+      const possessionsActives = possessions.filter(item => {
+        const dateDebut = new Date(item.dateDebut);
+        const dateFin = item.dateFin ? new Date(item.dateFin) : null;
+        return dateDebut <= selectedDate && (!dateFin || selectedDate <= dateFin);
+      });
+
+      const patrimoine = new Patrimoine(
+        "John Doe",
+        possessionsActives.map((item) =>
+          item.jour
+            ? new Flux(
+                item.possesseur ? item.possesseur.nom : "Inconnu",
+                item.libelle,
+                item.valeurConstante,
+                new Date(item.dateDebut),
+                item.dateFin ? new Date(item.dateFin) : null,
+                item.tauxAmortissement || 0,
+                item.jour
+              )
+            : new Possession(
+                item.possesseur ? item.possesseur.nom : "Inconnu",
+                item.libelle,
+                item.valeur,
+                new Date(item.dateDebut),
+                item.dateFin ? new Date(item.dateFin) : null,
+                item.tauxAmortissement || 0
+              )
+        )
+      );
+
+      setPatrimoineValue(patrimoine.getValeur(selectedDate));
+    } catch (error) {
+      console.error("Erreur lors du calcul du patrimoine :", error);
+      alert("Une erreur est survenue lors du calcul du patrimoine.");
     }
   };
-  
 
   const fetchPatrimoineData = async (dateDebut, dateFin, uniteTemps) => {
     try {
       const response = await fetch('http://localhost:5000/patrimoine/range', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          dateDebut,
-          dateFin,
-          type: uniteTemps,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dateDebut, dateFin, type: uniteTemps }),
       });
 
       if (!response.ok) {
@@ -123,9 +103,7 @@ const PatrimoinePage = () => {
       }
 
       const data = await response.json();
-      if (!Array.isArray(data)) {
-        throw new Error('Format de réponse inattendu');
-      }
+      if (!Array.isArray(data)) throw new Error('Format de réponse inattendu');
 
       return data;
     } catch (error) {
