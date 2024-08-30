@@ -23,24 +23,30 @@ const PatrimoinePage = () => {
         const data = await response.json();
         console.log('Possessions récupérées :', data);
 
-        if (Array.isArray(data.possessions)) {
-          setPossessions(data.possessions);
-          console.log('Possessions mises à jour :', data.possessions);
+        // Validation et formatage des données
+        if (Array.isArray(data) && data.length > 0) {
+          const validPossessions = data.filter(possession => 
+            possession.id && possession.libelle && typeof possession.valeur === 'number' && possession.dateDebut
+          );
+          
+          if (validPossessions.length > 0) {
+            setPossessions(validPossessions);
+            console.log('Possessions mises à jour :', validPossessions);
+          } else {
+            console.error('Aucune possession valide trouvée dans les données.', data);
+            alert('Données des possessions non valides.');
+          }
         } else {
           console.error('Données des possessions non valides :', data);
+          alert('Données des possessions non valides.');
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des possessions :', error);
       }
     };
-  
+
     fetchPossessionsData();
   }, []);
-  
-  // Affichage des possessions après mise à jour de l'état
-  useEffect(() => {
-    console.log('Possessions après mise à jour de l\'état :', possessions);
-  }, [possessions]);
 
   const calculatePatrimoineValue = () => {
     console.log('Calcul du patrimoine :', { selectedDate, possessions });

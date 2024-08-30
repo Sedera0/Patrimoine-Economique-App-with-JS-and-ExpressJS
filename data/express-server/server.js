@@ -95,28 +95,30 @@ app.post('/patrimoine/range', async (req, res) => {
     const data = await readData();
 
     const startDate = new Date(dateDebut);
-    const endDate = new Date(dateFin);
+    const endDate = dateFin ? new Date(dateFin) : new Date(); // Utilise la date actuelle si dateFin est manquante
     let valeursPatrimoine = {};
 
     for (const possession of data.possessions) {
       const possessionDateDebut = new Date(possession.dateDebut);
-      const possessionDateFin = possession.dateFin ? new Date(possession.dateFin) : new Date();
+      const possessionDateFin = possession.dateFin ? new Date(possession.dateFin) : new Date(); // Date actuelle si possession.dateFin est manquante
       let value = 0;
 
       // Check if the possession is within the date range
       if (possessionDateDebut <= endDate && possessionDateFin >= startDate) {
         switch (type) {
           case 'day': {
-            const daysInRange = Math.max(0, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))) + 1;
+            const daysInRange = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
             value = possession.valeur / daysInRange; // Distribute value across the days in range
             const currentDate = new Date(startDate);
 
             while (currentDate <= endDate) {
               const dateString = currentDate.toISOString().split('T')[0];
-              if (!valeursPatrimoine[dateString]) {
-                valeursPatrimoine[dateString] = 0;
+              if (currentDate >= possessionDateDebut && currentDate <= possessionDateFin) {
+                if (!valeursPatrimoine[dateString]) {
+                  valeursPatrimoine[dateString] = 0;
+                }
+                valeursPatrimoine[dateString] += value;
               }
-              valeursPatrimoine[dateString] += value;
               currentDate.setDate(currentDate.getDate() + 1);
             }
             break;

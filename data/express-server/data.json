@@ -73,13 +73,6 @@
       "tauxAmortissement": null,
       "jour": 2,
       "valeurConstante": -300000
-    },
-    {
-      "id": "7",
-      "libelle": "Ordi",
-      "valeur": 5551531221,
-      "dateDebut": "2024-08-01",
-      "tauxAmortissement": 1
     }
   ]
 }

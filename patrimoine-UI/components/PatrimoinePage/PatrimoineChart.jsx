@@ -19,21 +19,20 @@ const PatrimoineChart = ({ onFetchData }) => {
     if (dateDebut && dateFin && uniteTemps) {
       setLoading(true);  // Début du chargement
       try {
-        const data = await onFetchData(dateDebut, dateFin, uniteTemps);
-        
-        // Test avec des données variées
-        const testData = [
-          { date: '2024-01-01', value: 100 },
-          { date: '2024-01-02', value: 150 },
-          { date: '2024-01-03', value: 200 },
-          { date: '2024-01-04', value: 180 },
-          { date: '2024-01-05', value: 220 },
-          // Ajoutez plus de données pour tester
-        ];
-  
-        const labels = testData.map(item => item.date);
-        const values = testData.map(item => item.value);
-  
+        const data = await onFetchData(dateDebut.toISOString().split('T')[0], dateFin.toISOString().split('T')[0], uniteTemps);
+        console.log('Données reçues:', data);  // Vérifiez ici les données reçues
+
+        // Assurez-vous que les données reçues sont valides
+        if (!Array.isArray(data)) {
+          throw new Error('Les données reçues ne sont pas un tableau');
+        }
+
+        const labels = data.map(item => item.date);
+        const values = data.map(item => item.value);
+
+        console.log('Labels:', labels);  // Vérifiez ici les labels
+        console.log('Values:', values);  // Vérifiez ici les valeurs
+
         setChartData({
           labels: labels,
           datasets: [
@@ -56,8 +55,6 @@ const PatrimoineChart = ({ onFetchData }) => {
       alert('Veuillez remplir tous les champs !');
     }
   };
-  
-  
 
   return (
     <div className="container mt-3">
@@ -70,6 +67,7 @@ const PatrimoineChart = ({ onFetchData }) => {
             onChange={(date) => setDateDebut(date)}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+            placeholderText="Sélectionnez la date de début"
           />
         </Form.Group>
         <Form.Group controlId="dateFin" className='form1'>
@@ -79,6 +77,7 @@ const PatrimoineChart = ({ onFetchData }) => {
             onChange={(date) => setDateFin(date)}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+            placeholderText="Sélectionnez la date de fin"
           />
         </Form.Group>
         <Form.Group controlId="uniteTemps" className='form1'>
@@ -89,7 +88,7 @@ const PatrimoineChart = ({ onFetchData }) => {
             value={uniteTemps}
             onChange={(e) => setUniteTemps(e.target.value)}
           >
-            <option value="">...</option>
+            <option value="">Choisissez une unité de temps</option>
             <option value="day">Jour</option>
             <option value="month">Mois</option>
             <option value="year">Année</option>
