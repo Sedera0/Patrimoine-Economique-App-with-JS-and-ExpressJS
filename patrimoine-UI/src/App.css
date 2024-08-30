@@ -1,7 +1,7 @@
 body {
   font-size: 0.8rem; /* Ajustez cette valeur selon vos besoins (exemple : 14px, 12px, etc.) */
   line-height: 1.5; /* Ajustez le line-height pour une meilleure lisibilité */
-  scroll-behavior: smooth;
+  font-family: 'SUSE', sans-serif;
 }
 
 .dateSelection{

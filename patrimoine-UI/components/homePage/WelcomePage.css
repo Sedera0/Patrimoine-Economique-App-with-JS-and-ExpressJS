@@ -1,29 +1,53 @@
-/* WelcomePage.css */
+/* src/components/WelcomePage/WelcomePage.css */
+
+body {
+  font-family: 'SUSE', sans-serif; /* Example: Using Google Font 'SUSE' */
+}
+
+/* General container styling */
 .welcome-container {
-    background-color: #f0f8ff; /* Light blue background color for a welcoming feel */
-    height: 90vh; /* Full viewport height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+  background: #f9f5f2; /* Soft, warm background color */
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Keyframes for shadow moving left to right */
+@keyframes shadowMove {
+  0% {
+    box-shadow: -10px 4px 8px rgba(0, 0, 0, 0.1); /* Shadow on the left */
   }
-  
-  .welcome-content {
-    background: rgba(255, 255, 255, 0.8); /* Slightly transparent white background for text area */
-    padding: 30px;
-    border-radius: 15px; /* Rounded corners for a softer look */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for a subtle depth effect */
+  50% {
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2); /* Shadow in the center */
   }
-  
-  .welcome-title {
-    color: #008280; /* Dark indigo color for a warm and inviting look */
-    margin-bottom: 20px;
-    font-weight: bold; /* Make the title bold */
+  100% {
+    box-shadow: 10px 4px 8px rgba(0, 0, 0, 0.1); /* Shadow on the right */
   }
-  
-  .welcome-subtitle {
-    color: #000000; /* Darker text for better readability */
-    font-size: 1.4rem; /* Slightly larger subtitle */
-    margin-bottom: 0;
-  }
-  
+}
+
+/* Styling for the welcome content */
+.welcome-content {
+  background: #ffffff; /* Light background for the content area */
+  border-radius: 15px; /* Rounded corners for a softer look */
+  width: 75vw;
+  height: 40vh;
+  animation: shadowMove 3s infinite alternate-reverse; /* Infinite horizontal shadow animation */
+}
+
+/* Styling for the title */
+.welcome-title {
+  text-align: center;
+  width: auto;
+  font-size: 4rem;
+  font-family: 'Arial', sans-serif; /* Use a friendly, readable font */
+  font-weight: bold; /* Bold title to grab attention */
+  color: #bc8d45; /* Dark gray for good contrast */
+}
+
+/* Styling for the subtitle */
+.welcome-subtitle {
+  font-family: 'Arial', sans-serif; /* Consistent font with title */
+  color: #112a2e; /* Subtle color for the subtitle */
+  margin-top: 0.5rem; /* Space between title and subtitle */
+}

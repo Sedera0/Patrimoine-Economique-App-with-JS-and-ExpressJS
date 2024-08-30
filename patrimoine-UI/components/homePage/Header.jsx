@@ -8,7 +8,7 @@ import './Header.css'; // Import the custom CSS file for additional styles
 const Header = () => {
   return (
     <>
-      <Navbar bg="dark" variant="dark" expand="lg" className="d-flex justify-content-center align-items-center">
+      <Navbar variant="dark" expand="lg" className="d-flex justify-content-center align-items-center navbar">
         <Nav className="flex-grow-1 d-flex justify-content-end">
           <Nav.Link as={NavLink} to="/patrimoine" className="nav-link-small">Visualiser Votre Patrimoine</Nav.Link>
         </Nav>
