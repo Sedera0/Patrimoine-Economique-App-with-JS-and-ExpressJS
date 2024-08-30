@@ -50,7 +50,7 @@ const PatrimoinePage = () => {
 
   const calculatePatrimoineValue = () => {
     console.log('Calcul du patrimoine :', { selectedDate, possessions });
-
+  
     if (selectedDate) {
       try {
         if (!Array.isArray(possessions) || possessions.length === 0) {
@@ -58,11 +58,18 @@ const PatrimoinePage = () => {
           alert('Aucune donnée de possession disponible pour le calcul.');
           return;
         }
-
-        // Création d'instances de Possession et Flux basées sur les données de possession
+  
+        // Filtrer les possessions et flux actifs à la date sélectionnée
+        const possessionsActives = possessions.filter(item => {
+          const dateDebut = new Date(item.dateDebut);
+          const dateFin = item.dateFin ? new Date(item.dateFin) : null;
+          return dateDebut <= selectedDate && (!dateFin || selectedDate <= dateFin);
+        });
+  
+        // Création d'instances de Possession et Flux basées sur les données de possession actives
         const patrimoine = new Patrimoine(
           "John Doe",
-          possessions.map((item) =>
+          possessionsActives.map((item) =>
             item.jour
               ? new Flux(
                   item.possesseur ? item.possesseur.nom : "Inconnu",
@@ -83,7 +90,7 @@ const PatrimoinePage = () => {
                 )
           )
         );
-
+  
         const patValue = patrimoine.getValeur(selectedDate);
         setPatrimoineValue(patValue);
       } catch (error) {
@@ -94,6 +101,7 @@ const PatrimoinePage = () => {
       alert("Veuillez sélectionner une date !");
     }
   };
+  
 
   const fetchPatrimoineData = async (dateDebut, dateFin, uniteTemps) => {
     try {

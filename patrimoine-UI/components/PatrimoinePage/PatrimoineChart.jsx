@@ -21,18 +21,18 @@ const PatrimoineChart = ({ onFetchData }) => {
       try {
         const data = await onFetchData(dateDebut.toISOString().split('T')[0], dateFin.toISOString().split('T')[0], uniteTemps);
         console.log('Données reçues:', data);  // Vérifiez ici les données reçues
-
-        // Assurez-vous que les données reçues sont valides
-        if (!Array.isArray(data)) {
-          throw new Error('Les données reçues ne sont pas un tableau');
+  
+        // Assurez-vous que les données reçues sont valides et reflètent des valeurs variées
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('Les données reçues ne sont pas valides ou sont vides');
         }
-
+  
         const labels = data.map(item => item.date);
         const values = data.map(item => item.value);
-
+  
         console.log('Labels:', labels);  // Vérifiez ici les labels
         console.log('Values:', values);  // Vérifiez ici les valeurs
-
+  
         setChartData({
           labels: labels,
           datasets: [
@@ -55,6 +55,7 @@ const PatrimoineChart = ({ onFetchData }) => {
       alert('Veuillez remplir tous les champs !');
     }
   };
+  
 
   return (
     <div className="container mt-3">
