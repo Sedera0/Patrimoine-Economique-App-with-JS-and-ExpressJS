@@ -121,31 +121,58 @@ app.post('/patrimoine/range', async (req, res) => {
             break;
           }
           case 'month': {
-            const monthStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-            const monthEnd = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
-            
-            if (possessionDateDebut <= monthEnd && possessionDateFin >= monthStart) {
-              const monthKey = `${startDate.getFullYear()}-${startDate.getMonth() + 1}`;
-              if (!valeursPatrimoine[monthKey]) {
-                valeursPatrimoine[monthKey] = 0;
+            const currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+            while (currentMonth <= endDate) {
+              const monthKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+              const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+              const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+              const daysInMonth = (monthEnd - monthStart) / (1000 * 60 * 60 * 24) + 1;
+          
+              if (possessionDateDebut <= monthEnd && possessionDateFin >= monthStart) {
+                if (!valeursPatrimoine[monthKey]) {
+                  valeursPatrimoine[monthKey] = 0;
+                }
+          
+                // Proportionner la valeur selon les jours actifs dans le mois
+                const overlapStart = possessionDateDebut > monthStart ? possessionDateDebut : monthStart;
+                const overlapEnd = possessionDateFin < monthEnd ? possessionDateFin : monthEnd;
+                const daysActive = (overlapEnd - overlapStart) / (1000 * 60 * 60 * 24) + 1;
+          
+                valeursPatrimoine[monthKey] += (possession.valeur * daysActive) / daysInMonth;
               }
-              valeursPatrimoine[monthKey] += possession.valeur;
+              currentMonth.setMonth(currentMonth.getMonth() + 1); // Passer au mois suivant
             }
             break;
           }
+          
+          
+          
+          
           case 'year': {
-            const yearStart = new Date(startDate.getFullYear(), 0, 1);
-            const yearEnd = new Date(startDate.getFullYear(), 11, 31);
-            
-            if (possessionDateDebut <= yearEnd && possessionDateFin >= yearStart) {
-              const yearKey = `${startDate.getFullYear()}`;
-              if (!valeursPatrimoine[yearKey]) {
-                valeursPatrimoine[yearKey] = 0;
+            const currentYear = startDate.getFullYear();
+            for (let year = currentYear; year <= endDate.getFullYear(); year++) {
+              const yearStart = new Date(year, 0, 1);
+              const yearEnd = new Date(year, 11, 31);
+              const daysInYear = (yearEnd - yearStart) / (1000 * 60 * 60 * 24) + 1;
+          
+              if (possessionDateDebut <= yearEnd && possessionDateFin >= yearStart) {
+                const yearKey = `${year}`;
+                if (!valeursPatrimoine[yearKey]) {
+                  valeursPatrimoine[yearKey] = 0;
+                }
+          
+                // Calculer les jours actifs dans l'année
+                const overlapStart = possessionDateDebut > yearStart ? possessionDateDebut : yearStart;
+                const overlapEnd = possessionDateFin < yearEnd ? possessionDateFin : yearEnd;
+                const daysActive = (overlapEnd - overlapStart) / (1000 * 60 * 60 * 24) + 1;
+          
+                valeursPatrimoine[yearKey] += (possession.valeur * daysActive) / daysInYear;
               }
-              valeursPatrimoine[yearKey] += possession.valeur;
             }
             break;
           }
+          
+          
           default:
             res.status(400).json({ error: 'Invalid type specified' });
             return;

@@ -3,10 +3,11 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Button, Form } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js';
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, TimeScale } from 'chart.js';
+import 'chartjs-adapter-date-fns';
 import './PatrimoineChart.css';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, TimeScale); // Enregistre l'axe 'time'
 
 const PatrimoineChart = ({ onFetchData }) => {
   const [dateDebut, setDateDebut] = useState(null);
@@ -17,6 +18,10 @@ const PatrimoineChart = ({ onFetchData }) => {
 
   const handleValidate = async () => {
     if (dateDebut && dateFin && uniteTemps) {
+      if (dateDebut > dateFin) {
+        alert('La date de début ne peut pas être après la date de fin.');
+        return;
+      }
       setLoading(true);
       try {
         const data = await onFetchData(
@@ -24,14 +29,19 @@ const PatrimoineChart = ({ onFetchData }) => {
           dateFin.toISOString().split('T')[0], 
           uniteTemps
         );
-
+  
+        console.log("Données reçues : ", data); // Vérifiez les données reçues
+  
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error('Les données reçues ne sont pas valides ou sont vides');
         }
-
+  
         const labels = data.map(item => item.date);
         const values = data.map(item => item.value);
-
+  
+        console.log("Labels : ", labels);
+        console.log("Valeurs : ", values);
+  
         setChartData({
           labels: labels,
           datasets: [
@@ -54,6 +64,7 @@ const PatrimoineChart = ({ onFetchData }) => {
       alert('Veuillez remplir tous les champs !');
     }
   };
+  
 
   return (
     <div className="container mt-3">
@@ -64,7 +75,7 @@ const PatrimoineChart = ({ onFetchData }) => {
           <DatePicker
             selected={dateDebut}
             onChange={(date) => setDateDebut(date)}
-            dateFormat="yyyy-MM-dd"
+            dateFormat="dd-MM-yyyy"
             className="form-control"
             placeholderText="Sélectionnez la date de début"
           />
@@ -74,7 +85,7 @@ const PatrimoineChart = ({ onFetchData }) => {
           <DatePicker
             selected={dateFin}
             onChange={(date) => setDateFin(date)}
-            dateFormat="yyyy-MM-dd"
+            dateFormat="dd-MM-yyyy"
             className="form-control"
             placeholderText="Sélectionnez la date de fin"
           />
@@ -99,7 +110,33 @@ const PatrimoineChart = ({ onFetchData }) => {
       </Form>
       {chartData && (
         <div className="chart">
-          <Line data={chartData} />
+          <Line
+            data={chartData}
+            options={{
+              maintainAspectRatio: false,
+              responsive: true,
+              scales: {
+                x: {
+                  type: 'time', // Utiliser 'time' pour l'axe X
+                  time: {
+                    unit: uniteTemps, // Cela ajuste l'unité de temps (jour, mois, année) en fonction de la sélection
+                  },
+                },
+                y: {
+                  beginAtZero: true, // Assure que l'axe Y commence à zéro
+                },
+              },
+              plugins: {
+                legend: {
+                  display: true, // Affiche la légende du graphique
+                },
+                tooltip: {
+                  mode: 'index',
+                  intersect: false, // Améliore l'affichage des points de données dans les tooltips
+                },
+              },
+            }}
+          />
         </div>
       )}
     </div>
