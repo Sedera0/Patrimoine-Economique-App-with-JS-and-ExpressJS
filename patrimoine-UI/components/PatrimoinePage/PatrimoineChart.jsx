@@ -75,7 +75,7 @@ const PatrimoineChart = ({ onFetchData }) => {
           <DatePicker
             selected={dateDebut}
             onChange={(date) => setDateDebut(date)}
-            dateFormat="dd-MM-yyyy"
+            dateFormat="YYYY-MM-dd"
             className="form-control"
             placeholderText="Sélectionnez la date de début"
           />
@@ -85,7 +85,7 @@ const PatrimoineChart = ({ onFetchData }) => {
           <DatePicker
             selected={dateFin}
             onChange={(date) => setDateFin(date)}
-            dateFormat="dd-MM-yyyy"
+            dateFormat="YYYY-MM-dd"
             className="form-control"
             placeholderText="Sélectionnez la date de fin"
           />

@@ -89,16 +89,25 @@ app.get('/possessions/:id', async (req, res) => {
 app.post('/patrimoine/range', async (req, res) => {
   try {
     const { type, dateDebut, dateFin } = req.body;
-    console.log(`Calculating patrimoine range for type: ${type}, from ${dateDebut} to ${dateFin}`); // Log the request
+
+    // Validation des dates
+    if (!dateDebut || isNaN(new Date(dateDebut).getTime())) {
+      return res.status(400).json({ error: 'Date de début invalide' });
+    }
+    if (dateFin && isNaN(new Date(dateFin).getTime())) {
+      return res.status(400).json({ error: 'Date de fin invalide' });
+    }
+
+    console.log(`Calculating patrimoine range for type: ${type}, from ${dateDebut} to ${dateFin}`);
     const data = await readData();
 
     const startDate = new Date(dateDebut);
-    const endDate = dateFin ? new Date(dateFin) : new Date(); // Utilise la date actuelle si dateFin est manquante
+    const endDate = dateFin ? new Date(dateFin) : new Date();
     let valeursPatrimoine = {};
 
     for (const possession of data.possessions) {
       const possessionDateDebut = new Date(possession.dateDebut);
-      const possessionDateFin = possession.dateFin ? new Date(possession.dateFin) : new Date(); // Date actuelle si possession.dateFin est manquante
+      const possessionDateFin = possession.dateFin ? new Date(possession.dateFin) : new Date();
       let value = 0;
 
       if (possessionDateDebut <= endDate && possessionDateFin >= startDate) {
@@ -127,67 +136,63 @@ app.post('/patrimoine/range', async (req, res) => {
               const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
               const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
               const daysInMonth = (monthEnd - monthStart) / (1000 * 60 * 60 * 24) + 1;
-          
+
               if (possessionDateDebut <= monthEnd && possessionDateFin >= monthStart) {
                 if (!valeursPatrimoine[monthKey]) {
                   valeursPatrimoine[monthKey] = 0;
                 }
-          
-                // Proportionner la valeur selon les jours actifs dans le mois
+
                 const overlapStart = possessionDateDebut > monthStart ? possessionDateDebut : monthStart;
                 const overlapEnd = possessionDateFin < monthEnd ? possessionDateFin : monthEnd;
                 const daysActive = (overlapEnd - overlapStart) / (1000 * 60 * 60 * 24) + 1;
-          
+
                 valeursPatrimoine[monthKey] += (possession.valeur * daysActive) / daysInMonth;
               }
-              currentMonth.setMonth(currentMonth.getMonth() + 1); // Passer au mois suivant
+              currentMonth.setMonth(currentMonth.getMonth() + 1);
             }
             break;
           }
-          
-          
-          
-          
           case 'year': {
             const currentYear = startDate.getFullYear();
             for (let year = currentYear; year <= endDate.getFullYear(); year++) {
               const yearStart = new Date(year, 0, 1);
               const yearEnd = new Date(year, 11, 31);
               const daysInYear = (yearEnd - yearStart) / (1000 * 60 * 60 * 24) + 1;
-          
+
               if (possessionDateDebut <= yearEnd && possessionDateFin >= yearStart) {
                 const yearKey = `${year}`;
                 if (!valeursPatrimoine[yearKey]) {
                   valeursPatrimoine[yearKey] = 0;
                 }
-          
-                // Calculer les jours actifs dans l'année
+
                 const overlapStart = possessionDateDebut > yearStart ? possessionDateDebut : yearStart;
                 const overlapEnd = possessionDateFin < yearEnd ? possessionDateFin : yearEnd;
                 const daysActive = (overlapEnd - overlapStart) / (1000 * 60 * 60 * 24) + 1;
-          
+
                 valeursPatrimoine[yearKey] += (possession.valeur * daysActive) / daysInYear;
               }
             }
             break;
           }
-          
-          
           default:
-            res.status(400).json({ error: 'Invalid type specified' });
-            return;
+            return res.status(400).json({ error: 'Invalid type specified' });
         }
       }
     }
 
     // Convertir l'objet en tableau de résultats
     const result = Object.entries(valeursPatrimoine).map(([date, value]) => ({ date, value }));
+
+    // Trier le tableau par date
+    result.sort((a, b) => new Date(a.date) - new Date(b.date));
+
     res.json(result);
   } catch (error) {
     console.error("Error in /patrimoine/range route:", error);
     res.status(500).json({ error: 'Failed to retrieve data' });
   }
 });
+
 
 
 // Create a new possession
