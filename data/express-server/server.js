@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const { json } = bodyParser;
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const DATA_FILE = join(__dirname, 'data.json');
 
 // Middlewares
