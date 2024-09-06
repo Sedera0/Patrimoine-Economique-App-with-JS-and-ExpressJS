@@ -63,7 +63,7 @@ const Update = ({ possessionId, onUpdate }) => {
         valeurConstante: formData.valeurConstante || null,
       };
   
-      const response = await fetch(`http://localhost:5000/possessions/${possessionId}`, {
+      const response = await fetch(`https://express-server-xdig.onrender.com/possessions/${possessionId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
