@@ -58,7 +58,7 @@ const PossessionPage = () => {
       const { id, libelle, dateFin } = updatedData;
   
       // Étape 1: Récupérer la possession complète du serveur
-      const getResponse = await fetch(`http://localhost:5000/possessions/${id}`);
+      const getResponse = await fetch(`https://express-server-xdig.onrender.com/possessions/${id}`);
       if (!getResponse.ok) {
         throw new Error(`Erreur réseau lors de la récupération: ${getResponse.statusText}`);
       }
@@ -75,7 +75,7 @@ const PossessionPage = () => {
       console.log(`Data being sent: ${JSON.stringify(updatedPossession)}`);
   
       // Étape 3: Envoyer toutes les données mises à jour au serveur
-      const response = await fetch(`http://localhost:5000/possessions/${id}`, {
+      const response = await fetch(`https://express-server-xdig.onrender.com/possessions/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const PossessionPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/possessions/${id}`, {
+      const response = await fetch(`https://express-server-xdig.onrender.com/possessions/${id}`, {
         method: 'DELETE',
       });
 

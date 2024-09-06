@@ -91,7 +91,7 @@ const PatrimoinePage = () => {
 
   const fetchPatrimoineData = async (dateDebut, dateFin, uniteTemps) => {
     try {
-      const response = await fetch('http://localhost:5000/patrimoine/range', {
+      const response = await fetch('https://express-server-xdig.onrender.com/patrimoine/range', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dateDebut, dateFin, type: uniteTemps }),

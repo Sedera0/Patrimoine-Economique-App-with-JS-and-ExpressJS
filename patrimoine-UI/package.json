@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm install && npm run build",
+    "build": "vite build",
     "start": "vite preview",
+    "lint": "eslint . --ext js, jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,7 +20,7 @@
     "react-datepicker": "^7.3.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
-    "vite": "^5.4.2"
+    "serve": "^14.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

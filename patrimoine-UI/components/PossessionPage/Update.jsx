@@ -16,7 +16,7 @@ const Update = ({ possessionId, onUpdate }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/possessions/${possessionId}`);
+        const response = await fetch(`https://express-server-xdig.onrender.com/possessions/${possessionId}`);
         if (!response.ok) {
           throw new Error(`Erreur réseau : ${response.statusText}`);
         }
