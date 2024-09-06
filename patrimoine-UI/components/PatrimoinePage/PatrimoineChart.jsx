@@ -110,33 +110,45 @@ const PatrimoineChart = ({ onFetchData }) => {
       </Form>
       {chartData && (
         <div className="chart">
-          <Line
-            data={chartData}
-            options={{
-              maintainAspectRatio: false,
-              responsive: true,
-              scales: {
-                x: {
-                  type: 'time', // Utiliser 'time' pour l'axe X
-                  time: {
-                    unit: uniteTemps, // Cela ajuste l'unité de temps (jour, mois, année) en fonction de la sélection
+         <Line
+          data={chartData}
+          options={{
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+              x: {
+                type: 'time', // Utiliser 'time' pour l'axe X
+                time: {
+                  unit: uniteTemps, // Ajuste l'unité de temps (jour, mois, année)
+                  displayFormats: {
+                    day: 'MMM dd',   // Ajuste le format pour les jours
+                    month: 'MMM yyyy', // Ajuste le format pour les mois
+                    year: 'yyyy',    // Ajuste le format pour les années
                   },
                 },
-                y: {
-                  beginAtZero: true, // Assure que l'axe Y commence à zéro
+                ticks: {
+                  autoSkip: false, // Désactive le saut automatique des étiquettes
+                  maxRotation: 90, // Permet une rotation maximale pour éviter l'écrasement des étiquettes
+                  minRotation: 45, // Permet une rotation minimale
                 },
               },
-              plugins: {
-                legend: {
-                  display: true, // Affiche la légende du graphique
-                },
-                tooltip: {
-                  mode: 'index',
-                  intersect: false, // Améliore l'affichage des points de données dans les tooltips
-                },
+              y: {
+                beginAtZero: true, // Assure que l'axe Y commence à zéro
               },
-            }}
-          />
+            },
+            plugins: {
+              legend: {
+                display: true, // Affiche la légende du graphique
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false, // Améliore l'affichage des points de données dans les tooltips
+              },
+            },
+          }}
+        />
+
+
         </div>
       )}
     </div>
