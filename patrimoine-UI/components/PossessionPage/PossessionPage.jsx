@@ -13,7 +13,7 @@ const PossessionPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/possessions');
+        const response = await fetch('https://express-server-xdig.onrender.com/possessions');
         if (!response.ok) {
           throw new Error(`Erreur réseau : ${response.statusText}`);
         }
@@ -32,7 +32,7 @@ const PossessionPage = () => {
 
   const handleCreate = async (newData) => {
     try {
-      const response = await fetch('http://localhost:5000/possessions', {
+      const response = await fetch('https://express-server-xdig.onrender.com/possessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
