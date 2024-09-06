@@ -5,9 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build",
-    "lint": "eslint .",
-    "start": "npm start",
+    "build": "vite build",
+    "start": "vite preview",
     "preview": "vite preview"
   },
   "dependencies": {
