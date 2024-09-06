@@ -15,7 +15,7 @@ const PatrimoinePage = () => {
   useEffect(() => {
     const fetchPossessionsData = async () => {
       try {
-        const response = await fetch('/api/possessions');
+        const response = await fetch('https://express-server-xdig.onrender.com/possessions');
         if (!response.ok) throw new Error('Erreur de réseau');
 
         const data = await response.json();
